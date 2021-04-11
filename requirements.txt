@@ -1,6 +1,5 @@
 pyTelegramBotAPI
 telebot
 schedule
-sqlite3
 time
 datetime

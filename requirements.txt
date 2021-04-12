@@ -1,5 +1,2 @@
-pyTelegramBotAPI
-telebot
-schedule
-time
-datetime
+pyTelegramBotAPI==3.7.5
+schedule==1.0.0

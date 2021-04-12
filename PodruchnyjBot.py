@@ -44,7 +44,6 @@ def post(message):
     if message.text == '/order':
         cursor.execute("SELECT * FROM datas")
         res = cursor.fetchall()
-        print('\n'.join([post[0] + ". " + post[1] for post in res]))
         bot.send_message(message.chat.id, '\n'.join([str(post[0]) + ". " + post[1] for post in res])
                          if len(res) > 0 else "В очереди нет постов.")
     elif message.text.split()[0] == '/delete':

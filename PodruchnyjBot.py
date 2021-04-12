@@ -7,10 +7,7 @@ post_time = '17:00'
 
 
 class P_schedule():
-    def __init__(self):
-        pass
-
-    def start_schedule(self):
+    def start_schedule():
         schedule.every().tuesday.at(post_time).do(public_post)
         schedule.every().thursday.at(post_time).do(public_post)
         schedule.every().saturday.at(post_time).do(public_post)
@@ -43,8 +40,18 @@ def post(message):
     db = sqlite3.connect("database.db")
     cursor = db.cursor()
     if message.text == '/order':
-        cursor.execute("SELECT posts FROM datas")
-        bot.send_message(message.chat.id, '\n'.join([post[0] for post in cursor.fetchall()]))
+        cursor.execute("SELECT * FROM datas")
+        res = cursor.fetchall()
+        print('\n'.join([post[0] + ". " + post[1] for post in res]))
+        bot.send_message(message.chat.id, '\n'.join([post[0] + ". " + post[1] for post in res])
+                         if len(res) > 0 else "В очереди нет постов.")
+    elif message.text.split()[0] == '/delete':
+        try:
+            cursor.execute(f"DELETE FROM datas WHERE id={message.text.split()[1]}")
+            db.commit()
+            bot.send_message(message.chat.id, "Пост успешно удалён!")
+        except:
+            bot.send_message(message.chat.id, "Ошибка!")
     else:
         cursor.execute("INSERT INTO datas(posts) VALUES(?)", (message.text,))
         db.commit()

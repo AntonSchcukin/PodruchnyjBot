@@ -1,6 +1,8 @@
 import telebot, schedule, sqlite3, time, datetime
 from multiprocessing import *
-bot = telebot.TeleBot("1680703308:AAFYj5I9_ZpvVpSf2nZrTO3W3ovt49UyAIc")
+BOT_TOKEN = "1680703308:AAFYj5I9_ZpvVpSf2nZrTO3W3ovt49UyAIc"
+
+bot = telebot.TeleBot(BOT_TOKEN)
 papa_id = '1062973400'
 channel_name = '-1001497838043'
 post_time = '17:00'
@@ -43,7 +45,7 @@ def post(message):
         cursor.execute("SELECT * FROM datas")
         res = cursor.fetchall()
         print('\n'.join([post[0] + ". " + post[1] for post in res]))
-        bot.send_message(message.chat.id, '\n'.join([post[0] + ". " + post[1] for post in res])
+        bot.send_message(message.chat.id, '\n'.join([str(post[0]) + ". " + post[1] for post in res])
                          if len(res) > 0 else "В очереди нет постов.")
     elif message.text.split()[0] == '/delete':
         try:

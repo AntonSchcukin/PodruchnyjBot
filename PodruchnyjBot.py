@@ -1,18 +1,23 @@
+import threading
+
 import telebot, schedule, sqlite3, time, datetime
 from multiprocessing import *
-BOT_TOKEN = "1680703308:AAFYj5I9_ZpvVpSf2nZrTO3W3ovt49UyAIc"
-
-bot = telebot.TeleBot(BOT_TOKEN)
+bot = telebot.TeleBot("1680703308:AAFYj5I9_ZpvVpSf2nZrTO3W3ovt49UyAIc")
 papa_id = '1062973400'
 channel_name = '-1001497838043'
 post_time = '17:00'
 
 
+def run_threaded(job_func):
+    job_thread = threading.Thread(target=job_func)
+    job_thread.start()
+
+
 class P_schedule():
     def start_schedule():
-        schedule.every().tuesday.at(post_time).do(public_post)
-        schedule.every().thursday.at(post_time).do(public_post)
-        schedule.every().saturday.at(post_time).do(public_post)
+        schedule.every().tuesday.at(post_time).do(run_threaded, public_post)
+        schedule.every().thursday.at(post_time).do(run_threaded, public_post)
+        schedule.every().saturday.at(post_time).do(run_threaded, public_post)
 
         while True:
             schedule.run_pending()
@@ -29,7 +34,7 @@ def public_post():
         cursor = db.cursor()
         cursor.execute("SELECT posts FROM datas")
         post = cursor.fetchone()[0]
-        bot.send_message(channel_name, post)
+       # bot.send_message(channel_name, post)
         bot.send_message(papa_id, f'Новый пост был опубликован. Постов в очереди: {len(cursor.fetchall())}')
         cursor.execute(f"DELETE FROM datas WHERE posts='{post}'")
         db.commit()
@@ -42,7 +47,7 @@ def post(message):
     db = sqlite3.connect("database.db")
     cursor = db.cursor()
     if message.text == '/order':
-        cursor.execute("SELECT * FROM datas")
+        cursor.execute("SELECT id, posts FROM datas")
         res = cursor.fetchall()
         bot.send_message(message.chat.id, '\n'.join([str(post[0]) + ". " + post[1] for post in res])
                          if len(res) > 0 else "В очереди нет постов.")
